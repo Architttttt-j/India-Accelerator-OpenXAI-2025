@@ -6,7 +6,9 @@ export default function Home() {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [showSummary, setShowSummary] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const [history, setHistory] = useState<{ id: number; label: string; url: string }[]>([]);
+  const [history, setHistory] = useState<{ id: number; label: string; url: string; summary: string }[]>([]);
+  const [summary, setSummary] = useState<string>(""); // <-- AI summary state
+  const [loading, setLoading] = useState(false); // <-- Loading state
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
@@ -28,6 +30,32 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  // 🔹 Send audio blob to backend
+  const sendAudioToBackend = async (audioBlob: Blob, label: string) => {
+    const formData = new FormData();
+    formData.append("file", audioBlob, "audio.webm");
+
+    try {
+      setLoading(true);
+      setSummary("");
+      const response = await fetch("http://127.0.0.1:8000/process_audio/", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error("Failed to process audio");
+
+      const data = await response.json();
+      setSummary(data.summary);
+      addToHistory(label, URL.createObjectURL(audioBlob), data.summary);
+    } catch (error) {
+      console.error("Error sending audio:", error);
+      setSummary("❌ Error: Could not process audio.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const startRecording = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorderRef.current = new MediaRecorder(stream);
@@ -42,7 +70,9 @@ export default function Home() {
       const url = URL.createObjectURL(audioBlob);
       setAudioUrl(url);
       setShowSummary(true);
-      addToHistory("Recorded Audio", url);
+
+      // 🔹 Send recorded audio to backend
+      sendAudioToBackend(audioBlob, "Recorded Audio");
     };
 
     mediaRecorderRef.current.start();
@@ -60,19 +90,22 @@ export default function Home() {
       const url = URL.createObjectURL(file);
       setAudioUrl(url);
       setShowSummary(true);
-      addToHistory(file.name, url);
+
+      // 🔹 Send uploaded file to backend
+      sendAudioToBackend(file, file.name);
     }
   };
 
-  const addToHistory = (label: string, url: string) => {
+  const addToHistory = (label: string, url: string, summary: string) => {
     setHistory((prev) => [
       ...prev,
-      { id: Date.now(), label, url },
+      { id: Date.now(), label, url, summary },
     ]);
   };
 
-  const handleHistoryClick = (url: string) => {
-    setAudioUrl(url);
+  const handleHistoryClick = (item: { url: string; summary: string }) => {
+    setAudioUrl(item.url);
+    setSummary(item.summary);
     setShowSummary(true);
   };
 
@@ -87,7 +120,7 @@ export default function Home() {
             <li
               key={item.id}
               className="history-item"
-              onClick={() => handleHistoryClick(item.url)}
+              onClick={() => handleHistoryClick(item)}
             >
               {item.label}
             </li>
@@ -110,7 +143,11 @@ export default function Home() {
           <div className="summary-box">
             {audioUrl && <audio controls src={audioUrl} className="audio-player" />}
             <p className="summary-text">
-              ✨ AI Summary will appear here after processing your audio...
+              {loading
+                ? "⏳ Processing audio..."
+                : summary
+                ? summary
+                : "✨ AI Summary will appear here after processing your audio..."}
             </p>
           </div>
         )}
