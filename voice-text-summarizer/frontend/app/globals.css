@@ -1,0 +1,316 @@
+/* Base Reset */
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* App Container */
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  transition: background 0.6s ease, color 0.6s ease;
+  background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  color: #222;
+}
+
+.app.dark {
+  color: white;
+  background: linear-gradient(-45deg, #141e30, #243b55, #000000, #434343);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+}
+
+/* Gradient Animation */
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Dark/Light mode button */
+.mode-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 50%;
+  backdrop-filter: blur(5px);
+  transition: background 0.3s;
+}
+.mode-toggle:hover {
+  background: rgba(255,255,255,0.4);
+}
+
+/* Typing Title */
+.typing-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 40px;
+  white-space: nowrap;
+}
+
+/* Summary Box */
+.summary-box {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 15px;
+  padding: 20px;
+  width: 70%;
+  margin-bottom: 30px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+  animation: fadeIn 0.8s ease;
+  transition: all 0.4s ease;
+}
+.app.dark .summary-box {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.audio-player {
+  width: 100%;
+  margin-bottom: 15px;
+  border-radius: 8px;
+}
+
+.summary-text {
+  font-size: 1.1rem;
+}
+
+/* Buttons Section */
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+/* Mic Button */
+.mic-btn,
+.stop-btn,
+.upload-label {
+  padding: 14px 22px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.3s;
+  color: white;
+  font-weight: 500;
+}
+
+.mic-btn {
+  background: #4a90e2;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+}
+.mic-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Pulse animation when idle */
+.pulse {
+  animation: pulseAnim 1.5s infinite;
+}
+@keyframes pulseAnim {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74,144,226,0.5); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(74,144,226,0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74,144,226,0); }
+}
+
+/* Stop Button (Recording) */
+.stop-btn {
+  background: #e74c3c;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
+.recording {
+  animation: recordingAnim 1s infinite alternate;
+}
+@keyframes recordingAnim {
+  0% { background: #e74c3c; }
+  100% { background: #c0392b; }
+}
+
+/* Upload Button */
+.upload-label {
+  background: #f1c40f;
+  color: #222;
+  text-align: center;
+  cursor: pointer;
+  display: inline-block;
+}
+.upload-label:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(241, 196, 15, 0.5);
+}
+.upload-label input {
+  display: none;
+}
+
+/* Fade In */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 220px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  box-shadow: 2px 0 12px rgba(0,0,0,0.2);
+  overflow-y: auto;
+  transition: background 0.4s ease;
+}
+.app.dark .sidebar {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.sidebar-title {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.history-item {
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.2);
+  transition: background 0.3s, transform 0.2s;
+}
+.history-item:hover {
+  background: rgba(255,255,255,0.4);
+  transform: scale(1.03);
+}
+
+.app.dark .history-item {
+  background: rgba(0,0,0,0.5);
+}
+.app.dark .history-item:hover {
+  background: rgba(0,0,0,0.7);
+}
+
+.empty-history {
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+/* Main content shifted due to sidebar */
+.main-content {
+  margin-left: 240px;
+  padding: 20px;
+  flex: 1;
+  text-align: center;
+}
+
+/* --- Existing CSS remains same above --- */
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  /* Sidebar becomes collapsible on smaller screens */
+  .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    box-shadow: none;
+    padding: 10px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sidebar-title {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+
+  .history-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .history-item {
+    margin: 0;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  /* Main content stacks below sidebar */
+  .main-content {
+    margin-left: 0;
+    padding: 15px;
+  }
+
+  /* Title */
+  .typing-title {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    white-space: normal;
+  }
+
+  /* Summary box fits mobile width */
+  .summary-box {
+    width: 95%;
+    padding: 15px;
+  }
+
+  /* Buttons */
+  .button-container {
+    gap: 10px;
+  }
+  .mic-btn,
+  .stop-btn,
+  .upload-label {
+    width: 90%;
+    font-size: 1rem;
+    padding: 12px;
+  }
+
+  /* Mode toggle button smaller */
+  .mode-toggle {
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .typing-title {
+    font-size: 1.5rem;
+  }
+
+  .summary-text {
+    font-size: 1rem;
+  }
+
+  .mic-btn,
+  .stop-btn,
+  .upload-label {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+}
